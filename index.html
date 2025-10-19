@@ -1,569 +1,12 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <title>JOLIE PAS CHER</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-  <style>
-    :root {
-      --bleu-roi: #002366;
-      --jaune-imperial: #FFD700;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background: #1100ff;
-      background: linear-gradient(135deg, rgba(17, 0, 255, 1) 0%, rgba(0, 238, 255, 1) 50%, rgba(17, 0, 255, 1) 100%);
-      color: white;
-      min-height: 100vh;
-    }
-
-    header {
-      background-color: white;
-      color: black;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    header img {
-      height: 50px;
-    }
-
-    nav {
-      position: relative;
-    }
-
-    .burger {
-      display: flex;
-      flex-direction: column;
-      cursor: pointer;
-    }
-
-    .burger div {
-      width: 25px;
-      height: 3px;
-      background-color: black;
-      margin: 4px 0;
-      transition: 0.3s;
-    }
-
-    .menu {
-      display: none;
-      position: absolute;
-      right: 0;
-      top: 100%;
-      background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 255, 1) 35%, rgba(0, 225, 255, 0.25) 100%);
-      border-radius: 10px;
-      padding: 20px;
-      min-width: 150px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
-
-    .menu.active {
-      display: block;
-    }
-
-    .menu a {
-      color: white;
-      text-decoration: none;
-      display: block;
-      margin: 15px 0;
-      font-size: 18px;
-      padding: 10px;
-      border-radius: 5px;
-      transition: background 0.3s;
-      cursor: pointer;
-    }
-
-    .menu a:hover {
-      background: rgba(255,255,255,0.1);
-    }
-
-    main {
-      padding: 20px;
-    }
-
-    section {
-      display: none;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    section.active {
-      display: block;
-    }
-
-    section h1 {
-      text-align: center;
-      margin-bottom: 30px;
-      font-size: 2.5rem;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    }
-
-    section h2 {
-      margin-bottom: 20px;
-      color: var(--jaune-imperial);
-    }
-
-    section h3 {
-      margin-bottom: 15px;
-      color: var(--jaune-imperial);
-    }
-
-    .media-container {
-      text-align: center;
-      margin: 30px 0;
-    }
-
-    .audio-section {
-      margin: 30px 0;
-    }
-
-    .audio-section h2 {
-      margin: 20px 0 10px 0;
-      font-size: 1.5rem;
-    }
-
-    .search-bar {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .search-bar input {
-      padding: 15px;
-      border-radius: 25px;
-      border: none;
-      width: 80%;
-      max-width: 400px;
-      font-size: 16px;
-      outline: none;
-    }
-
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-top: 30px;
-    }
-
-    .item {
-      border: 2px solid var(--bleu-roi);
-      border-radius: 20px;
-      padding: 20px;
-      text-align: center;
-      background: radial-gradient(circle, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 255, 1) 36%, rgba(0, 255, 234, 1) 83%);
-      color: white;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 35px rgba(0,0,0,0.4);
-    }
-
-    .item img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      border-radius: 10px;
-      margin-bottom: 15px;
-    }
-
-    .item .emoji {
-      font-size: 4rem;
-      margin-bottom: 15px;
-    }
-
-    .item h3 {
-      margin: 15px 0;
-      font-size: 1.3rem;
-    }
-
-    .item p {
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: var(--jaune-imperial);
-      margin-bottom: 15px;
-    }
-
-    .item button {
-      background-color: white;
-      color: var(--bleu-roi);
-      border: none;
-      border-radius: 20px;
-      padding: 12px 20px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s;
-      font-size: 14px;
-    }
-
-    .item button:hover {
-      background-color: var(--jaune-imperial);
-      transform: scale(1.05);
-    }
-
-    .login-section {
-      margin-bottom: 30px;
-    }
-
-    .qr-login-section {
-      background: rgba(0,0,0,0.3);
-      padding: 25px;
-      border-radius: 15px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .qr-btn {
-      background: linear-gradient(45deg, #4CAF50, #2196F3);
-      color: white;
-      border: none;
-      border-radius: 25px;
-      padding: 15px 30px;
-      font-size: 18px;
-      cursor: pointer;
-      margin: 10px;
-      transition: all 0.3s;
-    }
-
-    .qr-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
-
-    .classic-login-section {
-      text-align: center;
-    }
-
-    .classic-login-btn {
-      background: rgba(255,255,255,0.1);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 20px;
-      padding: 10px 20px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .classic-login-btn:hover {
-      background: rgba(255,255,255,0.2);
-    }
-
-    .login-form {
-      background: rgba(0,0,0,0.2);
-      padding: 20px;
-      border-radius: 10px;
-      margin-top: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-width: 300px;
-      margin: 15px auto 0;
-    }
-
-    .login-form input {
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      outline: none;
-    }
-
-    .login-form button {
-      background: var(--jaune-imperial);
-      color: black;
-      border: none;
-      border-radius: 5px;
-      padding: 10px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .error {
-      color: #ff4444;
-      font-size: 14px;
-      margin-top: 10px;
-    }
-
-    .qr-scanner-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-    }
-
-    .qr-scanner-container {
-      background: white;
-      color: black;
-      padding: 30px;
-      border-radius: 20px;
-      text-align: center;
-      max-width: 400px;
-      width: 90%;
-    }
-
-    .qr-scanner-frame {
-      position: relative;
-      width: 300px;
-      height: 300px;
-      margin: 20px auto;
-      border: 3px solid #4CAF50;
-      border-radius: 15px;
-      overflow: hidden;
-    }
-
-    .qr-scanner-frame video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .qr-scanner-border {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 200px;
-      height: 200px;
-      border: 2px solid #4CAF50;
-      border-radius: 10px;
-      box-shadow: 0 0 0 1000px rgba(0,0,0,0.3);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.5; }
-      100% { opacity: 1; }
-    }
-
-    .scan-message {
-      margin: 15px 0;
-      font-weight: bold;
-      color: #333;
-    }
-
-    .qr-close-btn {
-      background: #f44336;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 20px;
-      cursor: pointer;
-      margin-top: 15px;
-    }
-
-    .user-dashboard {
-      margin-bottom: 30px;
-    }
-
-    .user-status {
-      background: rgba(76, 175, 80, 0.2);
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      border-left: 4px solid #4CAF50;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .logout-btn {
-      background: #ff4444;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      padding: 8px 15px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .bank-section, .code-section {
-      background: rgba(0,0,0,0.3);
-      padding: 20px;
-      border-radius: 10px;
-      margin: 15px 0;
-    }
-
-    .transfer-form {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .transfer-form input {
-      flex: 1;
-      min-width: 150px;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      outline: none;
-    }
-
-    .transfer-form button {
-      background: var(--jaune-imperial);
-      color: black;
-      border: none;
-      border-radius: 5px;
-      padding: 10px 20px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .code-section input {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      margin-top: 10px;
-      outline: none;
-    }
-
-    .code-success {
-      color: #4CAF50;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    .cart-content {
-      background: rgba(0,0,0,0.2);
-      padding: 25px;
-      border-radius: 15px;
-    }
-
-    .empty-cart {
-      text-align: center;
-      font-style: italic;
-      opacity: 0.7;
-      margin: 20px 0;
-    }
-
-    .panier-list {
-      list-style: none;
-      margin: 20px 0;
-    }
-
-    .panier-list li {
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .panier-list li:last-child {
-      border-bottom: none;
-    }
-
-    .total {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: var(--jaune-imperial);
-      text-align: center;
-      margin: 20px 0;
-    }
-
-    .buy-btn {
-      background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
-      color: white;
-      border: none;
-      border-radius: 25px;
-      padding: 15px 40px;
-      font-size: 18px;
-      cursor: pointer;
-      display: block;
-      margin: 20px auto;
-      transition: all 0.3s;
-    }
-
-    .buy-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-      }
-      
-      .item {
-        padding: 15px;
-      }
-      
-      .item img {
-        height: 150px;
-      }
-      
-      section h1 {
-        font-size: 2rem;
-      }
-      
-      .search-bar input {
-        width: 95%;
-      }
-      
-      .qr-scanner-frame {
-        width: 250px;
-        height: 250px;
-      }
-      
-      .user-status {
-        flex-direction: column;
-        text-align: center;
-      }
-      
-      .transfer-form {
-        flex-direction: column;
-      }
-    }
-
-    @media (max-width: 480px) {
-      header {
-        padding: 10px;
-      }
-      
-      header h1 {
-        font-size: 1.2rem;
-      }
-      
-      .container {
-        grid-template-columns: 1fr;
-      }
-      
-      .qr-scanner-container {
-        width: 95%;
-        padding: 20px;
-      }
-      
-      .qr-scanner-frame {
-        width: 200px;
-        height: 200px;
-      }
-    }
-  </style>
 </head>
 <body>
 
@@ -600,13 +43,13 @@
     <div class="audio-section">
       <h2>Frank le bœuf</h2>
       <iframe width="400" height="60" src="https://vocaroo.com/embed/1omwth55KSLT?autoplay=1" frameborder="0" allow="autoplay"></iframe>
-      
+     
       <h2>Band organise samba</h2>
       <iframe width="400" height="60" src="https://vocaroo.com/embed/1ghiDBHLVRtn?autoplay=0" frameborder="0" allow="autoplay"></iframe>
-      
+     
       <h2>Journal 2 20h02</h2>
       <iframe width="400" height="60" src="https://vocaroo.com/embed/1bKOLORGf4GO?autoplay=0" frameborder="0" allow="autoplay"></iframe>
-      
+     
       <h2>Vendez votre Frank Lebœuf</h2>
       <iframe width="400" height="60" src="https://vocaroo.com/embed/1fLLgpWY9xxo?autoplay=0" frameborder="0" allow="autoplay"></iframe>
     </div>
@@ -622,7 +65,7 @@
 
   <section id="panier">
     <h2>Votre panier</h2>
-    
+   
     <div id="login-section" class="login-section">
       <div class="qr-login-section">
         <h3>🔍 Connexion rapide par QR Code</h3>
@@ -631,12 +74,12 @@
           📷 Scanner QR Code
         </button>
       </div>
-      
+     
       <div class="classic-login-section">
         <button onclick="toggleClassicLogin()" class="classic-login-btn">
           🔑 Connexion classique
         </button>
-        
+       
         <form id="classic-login-form" class="login-form hidden" onsubmit="handleClassicLogin(event)">
           <input name="identifiant" type="text" placeholder="Identifiant" required>
           <input name="motDePasse" type="password" placeholder="Mot de passe" required>
@@ -646,6 +89,20 @@
       </div>
     </div>
 
+    <div id="qr-code-verification-overlay" class="qr-scanner-overlay hidden">
+      <div class="qr-scanner-container">
+        <h3>🔒 Vérification du code secret</h3>
+        <p id="qr-user-prompt">Veuillez entrer votre code secret pour **[NOM_UTILISATEUR]**.</p>
+        <form id="qr-verify-form" class="login-form" onsubmit="handleQRVerify(event)">
+          <input type="password" id="qr-secret-code" placeholder="Code Secret" required>
+          <button type="submit">Valider le Code</button>
+          <div id="qr-verify-error" class="error"></div>
+        </form>
+        <button onclick="cancelQRVerify()" class="qr-close-btn">
+          ❌ Annuler
+        </button>
+      </div>
+    </div>
     <div id="qr-scanner-overlay" class="qr-scanner-overlay hidden">
       <div class="qr-scanner-container">
         <h3>🔍 Scanner votre QR Code</h3>
@@ -698,7 +155,569 @@
   </section>
 </main>
 
-<script>
+<script src="script.js"></script>
+
+</body>
+</html>
+<style>
+:root {
+  --bleu-roi: #002366;
+  --jaune-imperial: #FFD700;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #1100ff;
+  background: linear-gradient(135deg, rgba(17, 0, 255, 1) 0%, rgba(0, 238, 255, 1) 50%, rgba(17, 0, 255, 1) 100%);
+  color: white;
+  min-height: 100vh;
+}
+
+header {
+  background-color: white;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+header img {
+  height: 50px;
+}
+
+nav {
+  position: relative;
+}
+
+.burger {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.burger div {
+  width: 25px;
+  height: 3px;
+  background-color: black;
+  margin: 4px 0;
+  transition: 0.3s;
+}
+
+.menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 255, 1) 35%, rgba(0, 225, 255, 0.25) 100%);
+  border-radius: 10px;
+  padding: 20px;
+  min-width: 150px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.menu.active {
+  display: block;
+}
+
+.menu a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  margin: 15px 0;
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background 0.3s;
+  cursor: pointer;
+}
+
+.menu a:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+main {
+  padding: 20px;
+}
+
+section {
+  display: none;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+section.active {
+  display: block;
+}
+
+section h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+section h2 {
+  margin-bottom: 20px;
+  color: var(--jaune-imperial);
+}
+
+section h3 {
+  margin-bottom: 15px;
+  color: var(--jaune-imperial);
+}
+
+.media-container {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.audio-section {
+  margin: 30px 0;
+}
+
+.audio-section h2 {
+  margin: 20px 0 10px 0;
+  font-size: 1.5rem;
+}
+
+.search-bar {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.search-bar input {
+  padding: 15px;
+  border-radius: 25px;
+  border: none;
+  width: 80%;
+  max-width: 400px;
+  font-size: 16px;
+  outline: none;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.item {
+  border: 2px solid var(--bleu-roi);
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  background: radial-gradient(circle, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 255, 1) 36%, rgba(0, 255, 234, 1) 83%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+}
+
+.item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.item .emoji {
+  font-size: 4rem;
+  margin-bottom: 15px;
+}
+
+.item h3 {
+  margin: 15px 0;
+  font-size: 1.3rem;
+}
+
+.item p {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--jaune-imperial);
+  margin-bottom: 15px;
+}
+
+.item button {
+  background-color: white;
+  color: var(--bleu-roi);
+  border: none;
+  border-radius: 20px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+  font-size: 14px;
+}
+
+.item button:hover {
+  background-color: var(--jaune-imperial);
+  transform: scale(1.05);
+}
+
+.login-section {
+  margin-bottom: 30px;
+}
+
+.qr-login-section {
+  background: rgba(0,0,0,0.3);
+  padding: 25px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.qr-btn {
+  background: linear-gradient(45deg, #4CAF50, #2196F3);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 15px 30px;
+  font-size: 18px;
+  cursor: pointer;
+  margin: 10px;
+  transition: all 0.3s;
+}
+
+.qr-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.classic-login-section {
+  text-align: center;
+}
+
+.classic-login-btn {
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.classic-login-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.login-form {
+  background: rgba(0,0,0,0.2);
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 300px;
+  margin: 15px auto 0;
+}
+
+.login-form input {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+}
+
+.login-form button {
+  background: var(--jaune-imperial);
+  color: black;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.error {
+  color: #ff4444;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.qr-scanner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.qr-scanner-container {
+  background: white;
+  color: black;
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.qr-scanner-frame {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin: 20px auto;
+  border: 3px solid #4CAF50;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.qr-scanner-frame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.qr-scanner-border {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  border: 2px solid #4CAF50;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1000px rgba(0,0,0,0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.scan-message {
+  margin: 15px 0;
+  font-weight: bold;
+  color: #333;
+}
+
+.qr-close-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.user-dashboard {
+  margin-bottom: 30px;
+}
+
+.user-status {
+  background: rgba(76, 175, 80, 0.2);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border-left: 4px solid #4CAF50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.logout-btn {
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.bank-section, .code-section {
+  background: rgba(0,0,0,0.3);
+  padding: 20px;
+  border-radius: 10px;
+  margin: 15px 0;
+}
+
+.transfer-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.transfer-form input {
+  flex: 1;
+  min-width: 150px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+}
+
+.transfer-form button {
+  background: var(--jaune-imperial);
+  color: black;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.code-section input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  margin-top: 10px;
+  outline: none;
+}
+
+.code-success {
+  color: #4CAF50;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.cart-content {
+  background: rgba(0,0,0,0.2);
+  padding: 25px;
+  border-radius: 15px;
+}
+
+.empty-cart {
+  text-align: center;
+  font-style: italic;
+  opacity: 0.7;
+  margin: 20px 0;
+}
+
+.panier-list {
+  list-style: none;
+  margin: 20px 0;
+}
+
+.panier-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.panier-list li:last-child {
+  border-bottom: none;
+}
+
+.total {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--jaune-imperial);
+  text-align: center;
+  margin: 20px 0;
+}
+
+.buy-btn {
+  background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 15px 40px;
+  font-size: 18px;
+  cursor: pointer;
+  display: block;
+  margin: 20px auto;
+  transition: all 0.3s;
+}
+
+.buy-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .container {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+ 
+  .item {
+    padding: 15px;
+  }
+ 
+  .item img {
+    height: 150px;
+  }
+ 
+  section h1 {
+    font-size: 2rem;
+  }
+ 
+  .search-bar input {
+    width: 95%;
+  }
+ 
+  .qr-scanner-frame {
+    width: 250px;
+    height: 250px;
+  }
+ 
+  .user-status {
+    flex-direction: column;
+    text-align: center;
+  }
+ 
+  .transfer-form {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 10px;
+  }
+ 
+  header h1 {
+    font-size: 1.2rem;
+  }
+ 
+  .container {
+    grid-template-columns: 1fr;
+  }
+ 
+  .qr-scanner-container {
+    width: 95%;
+    padding: 20px;
+  }
+ 
+  .qr-scanner-frame {
+    width: 200px;
+    height: 200px;
+  }
+}
+</style><script>
 // Variables globales
 let panier = [];
 let utilisateurConnecte = null;
@@ -706,6 +725,7 @@ let codeValide = false;
 let reduction = 0;
 let qrScannerActive = false;
 let animationId = null;
+let tempQRUser = null; // Utilisateur scanné temporairement
 
 const webhookURL = "https://discord.com/api/webhooks/1380578654093971527/50tQAtRKwQH0Fmktz1EunnhfJKyIbaBnXosQFRJGnCrNcp8BlvBHZWF7SXoFW3KzElfR";
 
@@ -729,7 +749,7 @@ const utilisateurs = {
   "ENEA": { solde: 10, motDePasse: "Messi" },
   "CHARLIE": { solde: 10, motDePasse: "1328" },
   "LOUIS": { solde: 110, motDePasse: "Loup" },
-  "GANZAGUE": { solde: 2000, motDePasse: "Algue" },
+  "GANZAGUE": { solde: 10, motDePasse: "Algue" },
   "HUGO": { solde: 10, motDePasse: "salut123" },
   "LENNY": { solde: 10, motDePasse: "coucou" },
   "GREGOIRE": { solde: 10, motDePasse: "argent" },
@@ -738,7 +758,25 @@ const utilisateurs = {
   "CAMILLE": { solde: 10, motDePasse: "fille" },
   "MATHIEU": { solde: 10, motDePasse: "Banane" },
   "GURMAN": { solde: 10, motDePasse: "Gourmand" },
-  "NOELIE": { solde: 10600, motDePasse: "Super" }
+  "NOELIE": { solde: 10600, motDePasse: "Super" },
+  "VICTOR": { solde: 1600, motDePasse: "frites" }
+
+};
+
+// Codes secrets pour la connexion QR
+const qrSecretCodes = {
+    "HARMAN": "220112",
+    "ALEXANDRE": "111111",
+    "ADMIN": "000000",
+    "MAXIME": "222222",
+    "GABRIEL": "333333",
+    "ELWEN": "444444",
+    "PANA": "555555",
+    "CAMILLE": "429203",
+    "NOELIE": "123456",
+    "VICTOR": "654321",
+    "HUGO": "236541"
+    // Les utilisateurs sans code ici n'auront pas la double vérification.
 };
 
 const articles = [
@@ -746,27 +784,28 @@ const articles = [
   { nom: "Sac Stylé", prix: 20, emoji: "🎒" },
   { nom: "Lunettes Soleil", prix: 5, emoji: "🕶️" },
   { nom: "Ballon de foot", prix: 5, emoji: "⚽" },
-  { nom: "Maxime", prix: 76, img: "https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png" },
-  { nom: "Elwen", prix: 937, img: "https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png" },
-  { nom: "Panajotis", prix: 246, img: "https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png" },
-  { nom: "Alexandre", prix: 903, img: "https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png" },
-  { nom: "Stylo", prix: 3, img: "🖊️"},
-  { nom: "Bugatti", prix: 1000, emoji: "🚗"},
-  { nom: "Enea", prix: 56, img:"https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png"},
-  { nom: "Charlie", prix: 527, img:"https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png"},
-  { nom: "Louis", prix: 666, img:"https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png"},
-  { nom: "Ganzague", prix: 905, img:"https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png"},
-  { nom: "Lenny", prix: 934, img:"https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png"},
-  { nom: "Grégoire", prix: 656, img:"https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png"},
-  { nom: "Sullivan", prix: 434, img:"https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png"},
-  { nom: "Ways", prix: 357, img:"https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png"},
-  { nom: "Tom", prix: 482, img:"https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png"},
-  { nom: "Liam", prix: 563, img:"https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png"},
-  { nom: "Wilhelm", prix: 1, img:"https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png"},
+  { nom: "Maxime", prix: 76, img: "https://i.postimg.cc/QMDmBRC5/IMG-20250526-WA0538.jpg" },
+  { nom: "Gabriel", prix: 827, img: "https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg" },
+  { nom: "Elwen", prix: 937, img: "https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg" },
+  { nom: "Panajotis", prix: 246, img: "https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg" },
+  { nom: "Alexandre", prix: 903, img: "https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg" },
+  { nom: "Stylo", prix: 3, img: "https://i.postimg.cc/pVcmYNnF/79351083-1-ea61-1.jpg"},
+  { nom: "Bugatti", prix: 1000, img: "https://i.postimg.cc/bNjM3B2B/875-875-bugatti-chiron-ultime-7544e77c6f8a7a0afe983c01ca597be8.png"},
+  { nom: "Enea", prix: 56, img:"https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg"},
+  { nom: "Charlie", prix: 527, img:"https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg"},
+  { nom: "Louis", prix: 666, img:"https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg"},
+  { nom: "Ganzague", prix: 905, img:"https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg"},
+  { nom: "Lenny", prix: 934, img:"https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg"},
+  { nom: "Grégoire", prix: 656, img:"https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg"},
+  { nom: "Sullivan", prix: 434, img:"https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg"},
+  { nom: "Ways", prix: 357, img:"https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg"},
+  { nom: "Tom", prix: 482, img:"https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg"},
+  { nom: "Liam", prix: 563, img:"https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg"},
+  { nom: "Wilhelm", prix: 1, img:"https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg"},
   { nom: "Camille", prix: 176, img:"https://i.postimg.cc/nhMRcFDP/IMG-20250609-WA0004.jpg"},
-  { nom: "Mathieu", prix: 430, img:"https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png"},
-  { nom: "Noélie", prix: 1000, img:"https://i.postimg.cc/nVyC94GL/pngtree-user-icon-web-admin-profile-avatar-gold-color-style-vector-png-image-14430724.png"},
-  { nom: "Harman(moi même, le char d'assaut)", prix: 10000000, img:"https://i.postimg.cc/bN4HJSsy/B9727210816-Z-1-20210531174720-000-GR8-I824-DO-1-0.jpg"}
+  { nom: "Mathieu", prix: 430, img:"https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg"},
+{ nom: "victor", prix: 500, img:"https://i.postimg.cc/76PJg5pN/5472d1b09d3d724228109d381d617326.jpg"}
+
 ];
 
 // Fonctions de base
@@ -781,11 +820,12 @@ function showSection(id) {
 }
 
 function sendWebhook(message) {
+  // Le catch permet d'éviter que le script ne plante si le webhook échoue
   fetch(webhookURL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content: message })
-  }).catch(err => console.warn("Erreur Webhook :", err));
+  }).catch(err => console.warn("Erreur Webhook (non critique) :", err));
 }
 
 // Affichage des articles
@@ -879,14 +919,14 @@ function acheter() {
   }
 
   const total = calculerTotal();
-  
+ 
   if (utilisateurs[utilisateurConnecte].solde >= total) {
     utilisateurs[utilisateurConnecte].solde -= total;
     utilisateurs["HARMAN"].solde += total;
-    
+   
     sendWebhook(`🛒 Achat effectué par ${utilisateurConnecte} : **${panier.length} articles** - Total **${total} cailloux**`);
     alert("Achat effectué avec succès !");
-    
+   
     panier = [];
     codeValide = false;
     reduction = 0;
@@ -902,7 +942,8 @@ function acheter() {
       sendWebhook(`💳 Crédit accordé à ${utilisateurConnecte}`);
     }
   }
-  }
+}
+
 // Connexions
 function toggleClassicLogin() {
   document.getElementById("classic-login-form").classList.toggle("hidden");
@@ -926,6 +967,7 @@ function login(username) {
   document.getElementById("login-section").classList.add("hidden");
   document.getElementById("user-dashboard").classList.remove("hidden");
   updateUserDisplay();
+  tempQRUser = null; // Réinitialise l'utilisateur temporaire après la connexion
 }
 
 function logout() {
@@ -953,7 +995,7 @@ function startQRScanner() {
       video.srcObject = stream;
       video.play();
       document.getElementById("scan-message").textContent = "Placez le QR code dans le cadre";
-      scanQRCode();
+      scanQRCode(); // Démarre le cycle de scan
     })
     .catch(err => {
       console.error('Erreur caméra:', err);
@@ -961,25 +1003,39 @@ function startQRScanner() {
     });
 }
 
+// FONCTION scanQRCode CORRIGÉE
 function scanQRCode() {
   if (!qrScannerActive) return;
 
   const video = document.getElementById("qr-video");
   const canvas = document.getElementById("qr-canvas");
   const context = canvas.getContext('2d');
-
-  if (video.readyState === video.HAVE_ENOUGH_DATA) {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-    if (code) {
-      handleQRCodeDetected(code.data);
+ 
+  // NOUVEAU: On vérifie que le flux vidéo a suffisamment de données pour être dessiné.
+  // Cela évite l'erreur fatale qui bloquait le reste du script.
+  if (video.readyState < video.HAVE_ENOUGH_DATA) {
+      animationId = requestAnimationFrame(scanQRCode);
       return;
-    }
+  }
+ 
+  // On peut dessiner le flux vidéo sur le canvas
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+  let code = null;
+ 
+  // On utilise un try/catch pour l'analyse du QR code pour une robustesse maximale
+  try {
+      code = jsQR(imageData.data, imageData.width, imageData.height);
+  } catch (e) {
+      console.error("Erreur jsQR lors de l'analyse:", e);
+  }
+ 
+  if (code) {
+    handleQRCodeDetected(code.data);
+    return;
   }
 
   if (qrScannerActive) {
@@ -989,11 +1045,21 @@ function scanQRCode() {
 
 function handleQRCodeDetected(qrData) {
   const userId = qrData.trim().toUpperCase();
-  
+ 
+  // Vérifie si l'ID est un utilisateur connu
   if (utilisateurs[userId]) {
-    login(userId);
-    stopQRScanner();
-    sendWebhook(`🔍 Connexion QR pour ${userId}`);
+    stopQRScanner(); // Arrête la caméra après la détection
+
+    // Vérifie si un code secret est requis pour cet utilisateur
+    if (qrSecretCodes[userId]) {
+      tempQRUser = userId; // Stocke l'utilisateur
+      document.getElementById("qr-user-prompt").textContent = `Veuillez entrer votre code secret pour **${userId}** (double vérification).`;
+      document.getElementById("qr-code-verification-overlay").classList.remove("hidden");
+    } else {
+      // Connexion directe si pas de code secret requis
+      login(userId);
+      sendWebhook(`🔍 Connexion QR simple pour ${userId}`);
+    }
   } else {
     document.getElementById("scan-message").textContent = `Code QR invalide: ${userId}`;
     setTimeout(() => {
@@ -1002,18 +1068,48 @@ function handleQRCodeDetected(qrData) {
   }
 }
 
+// Logique de vérification du code secret
+function handleQRVerify(event) {
+    event.preventDefault();
+    const codeSecret = document.getElementById("qr-secret-code").value.trim();
+    const errorDiv = document.getElementById("qr-verify-error");
+
+    if (!tempQRUser) {
+        errorDiv.textContent = "Erreur: Utilisateur QR non défini. Réessayez de scanner.";
+        return;
+    }
+
+    if (qrSecretCodes[tempQRUser] === codeSecret) {
+        // Code secret valide
+        document.getElementById("qr-code-verification-overlay").classList.add("hidden");
+        login(tempQRUser);
+        sendWebhook(`✅ Connexion QR réussie avec code secret pour ${tempQRUser}`);
+        document.getElementById("qr-secret-code").value = ''; // Nettoie le champ
+    } else {
+        // Code secret invalide
+        errorDiv.textContent = "Code secret incorrect. Réessayez.";
+    }
+}
+
+function cancelQRVerify() {
+    tempQRUser = null; // Annule la tentative de connexion
+    document.getElementById("qr-secret-code").value = ''; // Nettoie le champ
+    document.getElementById("qr-verify-error").textContent = '';
+    document.getElementById("qr-code-verification-overlay").classList.add("hidden");
+}
+
 function stopQRScanner() {
   qrScannerActive = false;
-  
+ 
   if (animationId) {
     cancelAnimationFrame(animationId);
   }
-  
+ 
   const video = document.getElementById("qr-video");
   if (video.srcObject) {
     video.srcObject.getTracks().forEach(track => track.stop());
   }
-  
+ 
   document.getElementById("qr-scanner-overlay").classList.add("hidden");
 }
 
@@ -1027,13 +1123,13 @@ function envoyerCailloux(event) {
   if (utilisateurs[destinataire] && montant > 0 && utilisateurs[utilisateurConnecte].solde >= montant) {
     utilisateurs[utilisateurConnecte].solde -= montant;
     utilisateurs[destinataire].solde += montant;
-    
+   
     alert(`Virement de ${montant} cailloux effectué vers ${destinataire}.`);
     sendWebhook(`💸 Virement de ${montant} cailloux de ${utilisateurConnecte} à ${destinataire}.`);
     updateUserDisplay();
     event.target.reset();
   } else {
-    alert('Erreur lors du virement.');
+    alert('Erreur lors du virement (destinataire inconnu ou solde insuffisant).');
   }
 }
 
@@ -1042,7 +1138,7 @@ function handleCodeInput(event) {
   if (event.key === 'Enter') {
     const code = event.target.value.trim().toUpperCase();
     const successDiv = document.getElementById("code-success");
-    
+   
     if (codes[code]) {
       codeValide = true;
       reduction = codes[code];
@@ -1066,6 +1162,3 @@ document.addEventListener('DOMContentLoaded', function() {
   sendWebhook("👀 Nouvelle visite sur **JOLIE PAS CHER** !");
 });
 </script>
-
-</body>
-</html>
