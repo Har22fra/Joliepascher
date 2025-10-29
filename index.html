@@ -6,6 +6,11 @@
   <title>JOLIE PAS CHER</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -57,6 +62,7 @@
       <button onclick="showSection('accueil')" class="px-4 py-3 rounded-lg hover:bg-white/10 transition-all text-left text-base">🏠 Accueil</button>
       <button onclick="showSection('boutique')" class="px-4 py-3 rounded-lg hover:bg-white/10 transition-all text-left text-base">🛍️ Boutique</button>
       <button onclick="showSection('panier')" class="px-4 py-3 rounded-lg hover:bg-white/10 transition-all text-left text-base">🛒 Panier</button>
+      <button id="admin-menu-btn" onclick="showSection('admin')" class="hidden px-4 py-3 rounded-lg bg-red-600 hover:bg-red-700 transition-all text-left text-base font-bold">⚙️ Administrateur</button>
     </div>
   </div>
 </header>
@@ -219,6 +225,13 @@
         <input type="text" placeholder="Entrez le code créateur" onkeypress="handleCodeInput(event)" class="w-full px-4 py-2 rounded-lg border-none bg-white dark:bg-gray-800 dark:text-white text-base focus:ring-2 focus:ring-primary">
         <div id="code-success" class="hidden mt-3 text-green-400 font-bold"></div>
       </div>
+
+      <div class="bg-white/10 dark:bg-black/20 backdrop-blur-sm rounded-2xl p-6">
+        <h3 class="text-xl font-bold text-yellow-400 mb-4">⚙️ Paramètres du compte</h3>
+        <button onclick="afficherParametresCompte()" class="w-full px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-lg transition-colors">
+          🔧 Modifier mon email / mot de passe
+        </button>
+      </div>
     </div>
 
     <!-- Cart Content -->
@@ -241,6 +254,111 @@
     <div id="order-history" class="hidden mt-8 bg-white/10 dark:bg-black/20 backdrop-blur-sm rounded-2xl p-6 md:p-8">
       <h3 class="text-2xl font-bold text-white mb-6">📜 Historique de vos commandes</h3>
       <div id="history-list"></div>
+    </div>
+  </section>
+
+  <!-- Section Admin -->
+  <section id="admin" class="section">
+    <h1 class="text-4xl md:text-5xl font-bold text-white text-center mb-8">⚙️ Panneau Administrateur</h1>
+
+    <!-- Gestion des thèmes -->
+    <div class="bg-gradient-to-br from-red-600 to-purple-600 rounded-2xl p-6 md:p-8 mb-8 shadow-2xl">
+      <h2 class="text-3xl font-bold text-white mb-6">🎨 Gestion des Événements</h2>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+        <button onclick="changerTheme('halloween')" class="bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-xl font-bold transition-all transform hover:scale-105">
+          🎃 Halloween
+        </button>
+        <button onclick="changerTheme('noel')" class="bg-red-600 hover:bg-red-700 text-white p-4 rounded-xl font-bold transition-all transform hover:scale-105">
+          🎄 Noël
+        </button>
+        <button onclick="changerTheme('paques')" class="bg-pink-400 hover:bg-pink-500 text-white p-4 rounded-xl font-bold transition-all transform hover:scale-105">
+          🐰 Pâques
+        </button>
+        <button onclick="changerTheme('nouvel-an')" class="bg-yellow-500 hover:bg-yellow-600 text-white p-4 rounded-xl font-bold transition-all transform hover:scale-105">
+          🎆 Nouvel An
+        </button>
+        <button onclick="changerTheme('st-valentin')" class="bg-pink-600 hover:bg-pink-700 text-white p-4 rounded-xl font-bold transition-all transform hover:scale-105">
+          💕 St Valentin
+        </button>
+        <button onclick="changerTheme('ldc')" class="bg-blue-800 hover:bg-blue-900 text-white p-4 rounded-xl font-bold transition-all transform hover:scale-105">
+          ⚽ LDC
+        </button>
+        <button onclick="changerTheme('ballon-dor')" class="bg-yellow-600 hover:bg-yellow-700 text-white p-4 rounded-xl font-bold transition-all transform hover:scale-105">
+          🏆 Ballon d'Or
+        </button>
+        <button onclick="changerTheme('coupe-monde')" class="bg-green-600 hover:bg-green-700 text-white p-4 rounded-xl font-bold transition-all transform hover:scale-105">
+          🏆 Coupe du Monde
+        </button>
+        <button onclick="changerTheme('normal')" class="bg-gray-600 hover:bg-gray-700 text-white p-4 rounded-xl font-bold transition-all transform hover:scale-105 col-span-2">
+          ⭐ Thème Normal
+        </button>
+      </div>
+
+      <div class="bg-white/20 rounded-lg p-4">
+        <p class="text-white"><strong>Thème actuel :</strong> <span id="current-theme" class="text-yellow-300">Normal</span></p>
+        <p class="text-white"><strong>Réduction active :</strong> <span id="current-reduction" class="text-yellow-300">0%</span></p>
+      </div>
+    </div>
+
+    <!-- Gestion des cailloux -->
+    <div class="bg-white/10 dark:bg-black/20 backdrop-blur-sm rounded-2xl p-6 md:p-8 mb-8">
+      <h2 class="text-3xl font-bold text-yellow-400 mb-6">💰 Gestion des Cailloux</h2>
+
+      <form onsubmit="ajouterCailloux(event)" class="space-y-4">
+        <div>
+          <label class="block text-white font-semibold mb-2">Utilisateur</label>
+          <input type="text" name="username" placeholder="Nom d'utilisateur (ex: MAXIME)" required class="w-full px-4 py-2 rounded-lg bg-white dark:bg-gray-800 dark:text-white text-base focus:ring-2 focus:ring-yellow-400">
+        </div>
+
+        <div>
+          <label class="block text-white font-semibold mb-2">Montant (positif pour ajouter, négatif pour retirer)</label>
+          <input type="number" name="montant" placeholder="Ex: 1000 ou -500" required class="w-full px-4 py-2 rounded-lg bg-white dark:bg-gray-800 dark:text-white text-base focus:ring-2 focus:ring-yellow-400">
+        </div>
+
+        <button type="submit" class="w-full px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-lg transition-all text-lg">
+          💸 Modifier le solde
+        </button>
+      </form>
+    </div>
+
+    <!-- Gestion des produits -->
+    <div class="bg-white/10 dark:bg-black/20 backdrop-blur-sm rounded-2xl p-6 md:p-8">
+      <h2 class="text-3xl font-bold text-yellow-400 mb-6">📦 Ajouter un Produit</h2>
+
+      <form onsubmit="ajouterProduit(event)" class="space-y-4">
+        <div>
+          <label class="block text-white font-semibold mb-2">Nom du produit</label>
+          <input type="text" name="nom" placeholder="Ex: Super Stylo" required class="w-full px-4 py-2 rounded-lg bg-white dark:bg-gray-800 dark:text-white text-base focus:ring-2 focus:ring-yellow-400">
+        </div>
+
+        <div>
+          <label class="block text-white font-semibold mb-2">Prix (en cailloux)</label>
+          <input type="number" name="prix" placeholder="Ex: 50" min="1" required class="w-full px-4 py-2 rounded-lg bg-white dark:bg-gray-800 dark:text-white text-base focus:ring-2 focus:ring-yellow-400">
+        </div>
+
+        <div>
+          <label class="block text-white font-semibold mb-2">Type</label>
+          <select name="type" onchange="toggleImageUrl(this.value)" class="w-full px-4 py-2 rounded-lg bg-white dark:bg-gray-800 dark:text-white text-base focus:ring-2 focus:ring-yellow-400">
+            <option value="emoji">Emoji</option>
+            <option value="image">Image</option>
+          </select>
+        </div>
+
+        <div id="emoji-input">
+          <label class="block text-white font-semibold mb-2">Emoji</label>
+          <input type="text" name="emoji" placeholder="Ex: 🎨" class="w-full px-4 py-2 rounded-lg bg-white dark:bg-gray-800 dark:text-white text-base focus:ring-2 focus:ring-yellow-400">
+        </div>
+
+        <div id="image-input" class="hidden">
+          <label class="block text-white font-semibold mb-2">URL de l'image</label>
+          <input type="url" name="imageUrl" placeholder="https://..." class="w-full px-4 py-2 rounded-lg bg-white dark:bg-gray-800 dark:text-white text-base focus:ring-2 focus:ring-yellow-400">
+        </div>
+
+        <button type="submit" class="w-full px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg transition-all text-lg">
+          ➕ Ajouter le produit
+        </button>
+      </form>
     </div>
   </section>
 
@@ -271,6 +389,27 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', eve
   }
 });
 
+// Configuration Firebase (VOS VRAIES CLÉS)
+const firebaseConfig = {
+  apiKey: "AIzaSyDUztozKsSV8b1imdc9YWw0CL_RlPmIKPk",
+  authDomain: "jolie-pas-cher.firebaseapp.com",
+  projectId: "jolie-pas-cher",
+  storageBucket: "jolie-pas-cher.firebasestorage.app",
+  messagingSenderId: "835428667735",
+  appId: "1:835428667735:web:8c52a5fe6dd312340c2e12",
+  measurementId: "G-JJ64ZQQDG9"
+};
+
+// Initialiser Firebase
+let db = null;
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+  console.log("✅ Firebase connecté");
+} catch (error) {
+  console.warn("⚠️ Firebase non disponible, mode hors ligne activé");
+}
+
 // Variables globales
 let panier = [];
 let utilisateurConnecte = null;
@@ -280,6 +419,8 @@ let qrScannerActive = false;
 let animationId = null;
 let tempQRUser = null;
 let historique = {};
+let themeActuel = 'normal';
+let reductionGlobale = 0;
 
 // Fonction pour générer un numéro de commande aléatoire
 function genererNumeroCommande() {
@@ -356,7 +497,8 @@ const codes = {
   "E9WBE9D3D83D4VDU4D5DUI8D0EH34J84KEVRI39DB38EOEBED9DJEJE0ZL'ZAMAMDVDUD9EO3282O393O3BDIZOZOZKDKEJC4U48388FIFUFUFUD6754F7F93B3BB33901010JKSSBZJZ9ZO": 99
 };
 
-const utilisateurs = {
+// Utilisateurs par défaut (fallback si Firebase ne fonctionne pas)
+const utilisateursDefaut = {
   "HARMAN": { solde: 100000000000, motDePasse: "1234" },
   "ALEXANDRE": { solde: 100000000, motDePasse: "bonjour" },
   "ADMIN": { solde: 999999999999, motDePasse: "Dasntesreve" },
@@ -380,6 +522,137 @@ const utilisateurs = {
   "VICTOR": { solde: 1600, motDePasse: "frites" }
 };
 
+let utilisateurs = {...utilisateursDefaut};
+
+// Initialiser les utilisateurs dans Firebase
+async function initialiserUtilisateurs() {
+  if (!db) return;
+
+  try {
+    for (const [username, data] of Object.entries(utilisateursDefaut)) {
+      const userRef = db.collection('utilisateurs').doc(username);
+      const doc = await userRef.get();
+
+      if (!doc.exists) {
+        await userRef.set({
+          solde: data.solde,
+          motDePasse: data.motDePasse,
+          email: null,
+          emailVerifie: false,
+          createdAt: new Date()
+        });
+      }
+    }
+
+    // Charger tous les utilisateurs depuis Firebase
+    await chargerUtilisateurs();
+
+    // Charger les paramètres globaux (thème, réduction)
+    await chargerParametresGlobaux();
+  } catch (error) {
+    console.warn("Erreur init Firebase:", error);
+  }
+}
+
+// Charger les utilisateurs depuis Firebase
+async function chargerUtilisateurs() {
+  if (!db) return;
+
+  try {
+    const snapshot = await db.collection('utilisateurs').get();
+    snapshot.forEach(doc => {
+      utilisateurs[doc.id] = doc.data();
+    });
+  } catch (error) {
+    console.warn("Erreur chargement utilisateurs:", error);
+  }
+}
+
+// Mettre à jour le solde dans Firebase
+async function mettreAJourSolde(username, nouveauSolde) {
+  if (!db) {
+    utilisateurs[username].solde = nouveauSolde;
+    return;
+  }
+
+  try {
+    await db.collection('utilisateurs').doc(username).update({
+      solde: nouveauSolde
+    });
+    utilisateurs[username].solde = nouveauSolde;
+  } catch (error) {
+    console.warn("Erreur MAJ solde:", error);
+    utilisateurs[username].solde = nouveauSolde;
+  }
+}
+
+// Sauvegarder une commande dans Firebase
+async function sauvegarderCommande(commande) {
+  if (!db) return;
+
+  try {
+    await db.collection('commandes').add({
+      ...commande,
+      timestamp: new Date()
+    });
+  } catch (error) {
+    console.warn("Erreur sauvegarde commande:", error);
+  }
+}
+
+// Charger l'historique depuis Firebase
+async function chargerHistorique(username) {
+  if (!db) return;
+
+  try {
+    const snapshot = await db.collection('commandes')
+      .where('utilisateur', '==', username)
+      .orderBy('timestamp', 'desc')
+      .get();
+
+    historique[username] = [];
+    snapshot.forEach(doc => {
+      historique[username].push(doc.data());
+    });
+
+    afficherHistorique();
+  } catch (error) {
+    console.warn("Erreur chargement historique:", error);
+  }
+}
+
+// Charger les paramètres globaux (thème, réduction)
+async function chargerParametresGlobaux() {
+  if (!db) return;
+
+  try {
+    const doc = await db.collection('parametres').doc('global').get();
+    if (doc.exists) {
+      const data = doc.data();
+      if (data.theme && data.theme !== themeActuel) {
+        appliquerTheme(data.theme, data.reduction || 0, false); // false = ne pas sauvegarder à nouveau
+      }
+    }
+  } catch (error) {
+    console.warn("Erreur chargement paramètres globaux:", error);
+  }
+}
+
+// Sauvegarder les paramètres globaux
+async function sauvegarderParametresGlobaux() {
+  if (!db) return;
+
+  try {
+    await db.collection('parametres').doc('global').set({
+      theme: themeActuel,
+      reduction: reductionGlobale,
+      updatedAt: new Date()
+    });
+  } catch (error) {
+    console.warn("Erreur sauvegarde paramètres globaux:", error);
+  }
+}
+
 const qrSecretCodes = {
   "HARMAN": "220112",
   "ALEXANDRE": "111111",
@@ -394,7 +667,7 @@ const qrSecretCodes = {
   "HUGO": "236541"
 };
 
-const articles = [
+let articles = [
   { nom: "chaise", prix: 10, emoji: "🪑" },
   { nom: "Sac Stylé", prix: 20, emoji: "🎒" },
   { nom: "Lunettes Soleil", prix: 5, emoji: "🕶️" },
@@ -553,9 +826,17 @@ function confirmerAjoutPanier(nom, prix, quantite) {
 
 function calculerTotal() {
   let total = panier.reduce((sum, item) => sum + (item.prix * item.quantité), 0);
+
+  // Appliquer la réduction du code promo
   if (codeValide) {
     total *= (1 - reduction / 100);
   }
+
+  // Appliquer la réduction globale de l'événement
+  if (reductionGlobale > 0) {
+    total *= (1 - reductionGlobale / 100);
+  }
+
   return Math.round(total);
 }
 
@@ -695,7 +976,7 @@ function demanderInfosLivraison() {
   document.getElementById('modal-container').appendChild(modal);
 }
 
-function validerLivraison() {
+async function validerLivraison() {
   const phone = document.getElementById('delivery-phone').value.trim();
   const address = document.getElementById('delivery-address').value.trim();
   const errorDiv = document.getElementById('delivery-error');
@@ -720,21 +1001,31 @@ function validerLivraison() {
     // Générer le numéro de commande
     const numeroCommande = genererNumeroCommande();
 
-    utilisateurs[utilisateurConnecte].solde -= totalFinal;
-    utilisateurs["HARMAN"].solde += totalFinal;
+    // Mettre à jour les soldes
+    await mettreAJourSolde(utilisateurConnecte, utilisateurs[utilisateurConnecte].solde - totalFinal);
+    await mettreAJourSolde("HARMAN", utilisateurs["HARMAN"].solde + totalFinal);
 
-    // Sauvegarder dans l'historique
-    if (!historique[utilisateurConnecte]) {
-      historique[utilisateurConnecte] = [];
-    }
-    historique[utilisateurConnecte].push({
+    // Préparer les données de commande
+    const commandeData = {
+      utilisateur: utilisateurConnecte,
       numero: numeroCommande,
       date: new Date().toLocaleString('fr-FR'),
       articles: [...panier],
       total: totalFinal,
       adresse: address,
-      telephone: phone
-    });
+      telephone: phone,
+      totalProduits: totalProduits,
+      fraisLivraison: fraisLivraison
+    };
+
+    // Sauvegarder dans l'historique local
+    if (!historique[utilisateurConnecte]) {
+      historique[utilisateurConnecte] = [];
+    }
+    historique[utilisateurConnecte].push(commandeData);
+
+    // Sauvegarder dans Firebase
+    await sauvegarderCommande(commandeData);
 
     sendWebhook(`🛒 **NOUVELLE COMMANDE**\n📋 Numéro: **${numeroCommande}**\n👤 Client: ${utilisateurConnecte}\n📦 Livraison: ${address}\n📞 Tél: ${phone}\n💰 Total produits: ${totalProduits} cailloux\n🚚 Frais livraison: ${fraisLivraison} cailloux\n✅ Total final: ${totalFinal} cailloux\n\n📦 Articles:\n${panier.map(p => `  • ${p.nom} x${p.quantité} (${p.prix * p.quantité} cailloux)`).join('\n')}`);
 
@@ -751,27 +1042,37 @@ function validerLivraison() {
     const montantManquant = totalFinal - utilisateurs[utilisateurConnecte].solde;
     showConfirm(
       `Solde insuffisant. Total avec livraison : ${totalFinal} cailloux.<br>Vous manquez ${montantManquant} cailloux.<br><br>Emprunter avec 5% d'intérêt ?`,
-      function handleCredit() {
+      async function handleCredit() {
         // Générer le numéro de commande
         const numeroCommande = genererNumeroCommande();
 
         const montantAvecInteret = Math.round(montantManquant * 1.05);
-        utilisateurs[utilisateurConnecte].solde -= montantAvecInteret;
-        utilisateurs["HARMAN"].solde += totalFinal;
 
-        // Sauvegarder dans l'historique
-        if (!historique[utilisateurConnecte]) {
-          historique[utilisateurConnecte] = [];
-        }
-        historique[utilisateurConnecte].push({
+        // Mettre à jour les soldes
+        await mettreAJourSolde(utilisateurConnecte, utilisateurs[utilisateurConnecte].solde - montantAvecInteret);
+        await mettreAJourSolde("HARMAN", utilisateurs["HARMAN"].solde + totalFinal);
+
+        // Préparer les données de commande
+        const commandeData = {
+          utilisateur: utilisateurConnecte,
           numero: numeroCommande,
           date: new Date().toLocaleString('fr-FR'),
           articles: [...panier],
           total: totalFinal,
           adresse: address,
           telephone: phone,
-          credit: true
-        });
+          credit: true,
+          montantCredit: montantAvecInteret
+        };
+
+        // Sauvegarder dans l'historique local
+        if (!historique[utilisateurConnecte]) {
+          historique[utilisateurConnecte] = [];
+        }
+        historique[utilisateurConnecte].push(commandeData);
+
+        // Sauvegarder dans Firebase
+        await sauvegarderCommande(commandeData);
 
         sendWebhook(`💳 **COMMANDE AVEC CRÉDIT**\n📋 Numéro: **${numeroCommande}**\n👤 Client: ${utilisateurConnecte}\n💰 Crédit: ${montantAvecInteret} cailloux\n📦 Livraison: ${address}\n📞 Tél: ${phone}\n✅ Total: ${totalFinal} cailloux\n\n📦 Articles:\n${panier.map(p => `  • ${p.nom} x${p.quantité} (${p.prix * p.quantité} cailloux)`).join('\n')}`);
         showAlert(`✅ Crédit accordé ! Commande validée.\n\n📋 NUMÉRO DE COMMANDE :\n${numeroCommande}\n\n💰 Total : ${totalFinal} cailloux\n📦 Livraison à : ${address}\n\n⚠️ Conservez votre numéro de commande !`);
@@ -806,14 +1107,120 @@ function handleClassicLogin(event) {
   }
 }
 
-function login(username) {
+async function login(username) {
   utilisateurConnecte = username;
+
+  // Charger les données depuis Firebase
+  await chargerUtilisateurs();
+
+  // Vérifier si l'email est manquant
+  if (!utilisateurs[username].email) {
+    demanderEmail(username);
+    return;
+  }
+
   document.getElementById("login-section").classList.add("hidden");
   document.getElementById("user-dashboard").classList.remove("hidden");
+
+  // Afficher le menu admin si c'est HARMAN
+  if (username === 'HARMAN' || username === 'ADMIN') {
+    document.getElementById('admin-menu-btn').classList.remove('hidden');
+  }
+
+  await chargerHistorique(username);
+
   updateUserDisplay();
   afficherHistorique();
   tempQRUser = null;
   showToast(`Bienvenue ${username} ! 👋`, 'success');
+}
+
+// Demander l'email à la première connexion
+function demanderEmail(username) {
+  const modal = document.createElement('div');
+  modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4';
+  modal.innerHTML = `
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl">
+      <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">📧 Première connexion !</h3>
+      <p class="text-gray-700 dark:text-gray-300 mb-6">Pour finaliser votre compte, veuillez ajouter votre adresse email.</p>
+
+      <form id="email-setup-form" onsubmit="validerEmailSetup(event, '${username}')" class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">📧 Adresse Email (obligatoire)</label>
+          <input type="email" id="email-input" placeholder="exemple@gmail.com" required class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white text-base focus:ring-2 focus:ring-primary">
+        </div>
+
+        <div class="border-t border-gray-300 dark:border-gray-600 pt-4">
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">🔒 Changer le mot de passe (optionnel)</label>
+          <input type="password" id="new-password-input" placeholder="Nouveau mot de passe (laissez vide pour garder l'ancien)" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white text-base focus:ring-2 focus:ring-primary mb-2">
+          <input type="password" id="confirm-password-input" placeholder="Confirmer le nouveau mot de passe" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white text-base focus:ring-2 focus:ring-primary">
+        </div>
+
+        <div id="email-setup-error" class="text-red-500 text-sm hidden"></div>
+
+        <button type="submit" class="w-full px-4 py-2 bg-primary hover:bg-primary/80 text-white font-bold rounded-lg transition-colors">
+          ✅ Valider
+        </button>
+      </form>
+    </div>
+  `;
+  document.getElementById('modal-container').appendChild(modal);
+  setTimeout(() => document.getElementById('email-input').focus(), 100);
+}
+
+async function validerEmailSetup(event, username) {
+  event.preventDefault();
+  const email = document.getElementById('email-input').value.trim();
+  const newPassword = document.getElementById('new-password-input').value.trim();
+  const confirmPassword = document.getElementById('confirm-password-input').value.trim();
+  const errorDiv = document.getElementById('email-setup-error');
+
+  // Vérifier que les mots de passe correspondent si renseignés
+  if (newPassword && newPassword !== confirmPassword) {
+    errorDiv.textContent = "Les mots de passe ne correspondent pas.";
+    errorDiv.classList.remove('hidden');
+    return;
+  }
+
+  // Mettre à jour l'utilisateur
+  const updateData = {
+    email: email,
+    emailVerifie: true
+  };
+
+  if (newPassword) {
+    updateData.motDePasse = newPassword;
+  }
+
+  if (!db) {
+    utilisateurs[username] = { ...utilisateurs[username], ...updateData };
+  } else {
+    try {
+      await db.collection('utilisateurs').doc(username).update(updateData);
+      utilisateurs[username] = { ...utilisateurs[username], ...updateData };
+    } catch (error) {
+      errorDiv.textContent = "Erreur lors de la mise à jour. Réessayez.";
+      errorDiv.classList.remove('hidden');
+      return;
+    }
+  }
+
+  sendWebhook(`📧 **Email ajouté**\n👤 Utilisateur: ${username}\n✉️ Email: ${email}${newPassword ? '\n🔒 Mot de passe changé' : ''}`);
+
+  // Fermer la modale et continuer la connexion
+  document.querySelector('#modal-container .fixed').remove();
+
+  document.getElementById("login-section").classList.add("hidden");
+  document.getElementById("user-dashboard").classList.remove("hidden");
+
+  if (username === 'HARMAN' || username === 'ADMIN') {
+    document.getElementById('admin-menu-btn').classList.remove('hidden');
+  }
+
+  await chargerHistorique(username);
+  updateUserDisplay();
+  afficherHistorique();
+  showToast(`Bienvenue ${username} ! Email configuré avec succès ! 👋`, 'success');
 }
 
 function logout() {
@@ -821,6 +1228,7 @@ function logout() {
   document.getElementById("login-section").classList.remove("hidden");
   document.getElementById("user-dashboard").classList.add("hidden");
   document.getElementById("order-history").classList.add("hidden");
+  document.getElementById('admin-menu-btn').classList.add('hidden');
   showToast('Déconnexion réussie', 'info');
 }
 
@@ -993,15 +1401,16 @@ function stopQRScanner() {
 }
 
 // Transfers
-function envoyerCailloux(event) {
+async function envoyerCailloux(event) {
   event.preventDefault();
   const formData = new FormData(event.target);
   const destinataire = formData.get('destinataire').trim().toUpperCase();
   const montant = parseInt(formData.get('montant'));
 
   if (utilisateurs[destinataire] && montant > 0 && utilisateurs[utilisateurConnecte].solde >= montant) {
-    utilisateurs[utilisateurConnecte].solde -= montant;
-    utilisateurs[destinataire].solde += montant;
+    // Mettre à jour les soldes dans Firebase
+    await mettreAJourSolde(utilisateurConnecte, utilisateurs[utilisateurConnecte].solde - montant);
+    await mettreAJourSolde(destinataire, utilisateurs[destinataire].solde + montant);
 
     showToast(`Virement de ${montant} cailloux effectué vers ${destinataire} ✅`, 'success');
     sendWebhook(`💸 Virement de ${montant} cailloux de ${utilisateurConnecte} à ${destinataire}.`);
@@ -1035,8 +1444,306 @@ function handleCodeInput(event) {
   }
 }
 
+// Fonctions Admin
+function toggleImageUrl(type) {
+  const emojiInput = document.getElementById('emoji-input');
+  const imageInput = document.getElementById('image-input');
+
+  if (type === 'emoji') {
+    emojiInput.classList.remove('hidden');
+    imageInput.classList.add('hidden');
+  } else {
+    emojiInput.classList.add('hidden');
+    imageInput.classList.remove('hidden');
+  }
+}
+
+async function ajouterCailloux(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const username = formData.get('username').trim().toUpperCase();
+  const montant = parseInt(formData.get('montant'));
+
+  if (!utilisateurs[username]) {
+    showToast('Utilisateur inconnu !', 'error');
+    return;
+  }
+
+  const nouveauSolde = utilisateurs[username].solde + montant;
+  await mettreAJourSolde(username, nouveauSolde);
+
+  sendWebhook(`⚙️ **ADMIN** - Modification de solde\n👤 Utilisateur: ${username}\n💰 Changement: ${montant > 0 ? '+' : ''}${montant} cailloux\n✅ Nouveau solde: ${nouveauSolde} cailloux`);
+
+  showToast(`${montant > 0 ? 'Ajouté' : 'Retiré'} ${Math.abs(montant)} cailloux ${montant > 0 ? 'à' : 'de'} ${username}`, 'success');
+  event.target.reset();
+
+  if (utilisateurConnecte === username) {
+    updateUserDisplay();
+  }
+}
+
+function ajouterProduit(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const nom = formData.get('nom').trim();
+  const prix = parseInt(formData.get('prix'));
+  const type = formData.get('type');
+
+  const nouvelArticle = { nom, prix };
+
+  if (type === 'emoji') {
+    const emoji = formData.get('emoji').trim();
+    if (!emoji) {
+      showToast('Veuillez entrer un emoji !', 'error');
+      return;
+    }
+    nouvelArticle.emoji = emoji;
+  } else {
+    const imageUrl = formData.get('imageUrl').trim();
+    if (!imageUrl) {
+      showToast('Veuillez entrer une URL d\'image !', 'error');
+      return;
+    }
+    nouvelArticle.img = imageUrl;
+  }
+
+  articles.push(nouvelArticle);
+  afficherArticles();
+
+  sendWebhook(`⚙️ **ADMIN** - Nouveau produit ajouté\n📦 Nom: ${nom}\n💰 Prix: ${prix} cailloux\n${type === 'emoji' ? '😀 Emoji: ' + nouvelArticle.emoji : '🖼️ Image: ' + nouvelArticle.img}`);
+
+  showToast(`Produit "${nom}" ajouté avec succès !`, 'success');
+  event.target.reset();
+}
+
+const themes = {
+  halloween: {
+    nom: 'Halloween',
+    emoji: '🎃',
+    colors: {
+      from: 'from-orange-600',
+      via: 'via-purple-600',
+      to: 'to-black'
+    }
+  },
+  noel: {
+    nom: 'Noël',
+    emoji: '🎄',
+    colors: {
+      from: 'from-red-600',
+      via: 'via-green-600',
+      to: 'to-white'
+    }
+  },
+  paques: {
+    nom: 'Pâques',
+    emoji: '🐰',
+    colors: {
+      from: 'from-pink-400',
+      via: 'via-yellow-300',
+      to: 'to-blue-300'
+    }
+  },
+  'nouvel-an': {
+    nom: 'Nouvel An',
+    emoji: '🎆',
+    colors: {
+      from: 'from-yellow-500',
+      via: 'via-purple-500',
+      to: 'to-blue-500'
+    }
+  },
+  'st-valentin': {
+    nom: 'St Valentin',
+    emoji: '💕',
+    colors: {
+      from: 'from-pink-500',
+      via: 'via-red-500',
+      to: 'to-pink-600'
+    }
+  },
+  ldc: {
+    nom: 'Ligue des Champions',
+    emoji: '⚽',
+    colors: {
+      from: 'from-blue-900',
+      via: 'via-blue-600',
+      to: 'to-blue-900'
+    }
+  },
+  'ballon-dor': {
+    nom: 'Ballon d\'Or',
+    emoji: '🏆',
+    colors: {
+      from: 'from-yellow-600',
+      via: 'via-yellow-400',
+      to: 'to-yellow-600'
+    }
+  },
+  'coupe-monde': {
+    nom: 'Coupe du Monde',
+    emoji: '🏆',
+    colors: {
+      from: 'from-green-600',
+      via: 'via-yellow-500',
+      to: 'to-blue-600'
+    }
+  },
+  normal: {
+    nom: 'Normal',
+    emoji: '⭐',
+    colors: {
+      from: 'from-blue-600',
+      via: 'via-cyan-400',
+      to: 'to-blue-600'
+    }
+  }
+};
+
+function changerTheme(themeId) {
+  if (themeId !== 'normal') {
+    // Demander le pourcentage de réduction
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4';
+    modal.innerHTML = `
+      <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">${themes[themeId].emoji} ${themes[themeId].nom}</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-6">Quelle réduction globale voulez-vous appliquer ?</p>
+        <input type="number" id="reduction-input" min="0" max="100" value="10" placeholder="Ex: 10" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white text-base mb-4 focus:ring-2 focus:ring-primary">
+        <div class="flex gap-3">
+          <button class="flex-1 px-4 py-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-white rounded-lg transition-colors" onclick="this.closest('.fixed').remove()">
+            Annuler
+          </button>
+          <button class="flex-1 px-4 py-2 bg-primary hover:bg-primary/80 text-white font-bold rounded-lg transition-colors" onclick="appliquerTheme('${themeId}', parseInt(document.getElementById('reduction-input').value)); this.closest('.fixed').remove()">
+            Appliquer
+          </button>
+        </div>
+      </div>
+    `;
+    document.getElementById('modal-container').appendChild(modal);
+  } else {
+    appliquerTheme('normal', 0);
+  }
+}
+
+async function appliquerTheme(themeId, reductionPct, sauvegarder = true) {
+  themeActuel = themeId;
+  reductionGlobale = reductionPct || 0;
+
+  const theme = themes[themeId];
+  const body = document.body;
+
+  // Supprimer les anciennes classes de couleur
+  body.className = body.className.replace(/from-\S+/g, '').replace(/via-\S+/g, '').replace(/to-\S+/g, '');
+
+  // Ajouter les nouvelles classes
+  body.classList.add('bg-gradient-to-br', theme.colors.from, theme.colors.via, theme.colors.to);
+
+  // Mettre à jour l'affichage
+  document.getElementById('current-theme').textContent = `${theme.emoji} ${theme.nom}`;
+  document.getElementById('current-reduction').textContent = `${reductionGlobale}%`;
+
+  // Mettre à jour le panier pour refléter la nouvelle réduction
+  afficherPanier();
+
+  // Sauvegarder dans Firebase pour que tous les utilisateurs voient le changement
+  if (sauvegarder) {
+    await sauvegarderParametresGlobaux();
+    sendWebhook(`⚙️ **ADMIN** - Changement de thème\n🎨 Nouveau thème: ${theme.emoji} ${theme.nom}\n💰 Réduction globale: ${reductionGlobale}%`);
+    showToast(`Thème "${theme.nom}" activé pour TOUS ${reductionGlobale > 0 ? `avec ${reductionGlobale}% de réduction` : ''} !`, 'success');
+  }
+}
+
+// Afficher les paramètres du compte
+function afficherParametresCompte() {
+  const modal = document.createElement('div');
+  modal.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4';
+  modal.innerHTML = `
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl">
+      <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">⚙️ Paramètres du compte</h3>
+
+      <form id="account-settings-form" onsubmit="validerParametresCompte(event)" class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">📧 Email actuel</label>
+          <p class="text-gray-900 dark:text-white font-semibold mb-2">${utilisateurs[utilisateurConnecte].email || 'Aucun email'}</p>
+          <input type="email" id="new-email-input" placeholder="Nouvel email (optionnel)" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white text-base focus:ring-2 focus:ring-primary">
+        </div>
+
+        <div class="border-t border-gray-300 dark:border-gray-600 pt-4">
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">🔒 Changer le mot de passe (optionnel)</label>
+          <input type="password" id="settings-new-password" placeholder="Nouveau mot de passe" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white text-base focus:ring-2 focus:ring-primary mb-2">
+          <input type="password" id="settings-confirm-password" placeholder="Confirmer le mot de passe" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white text-base focus:ring-2 focus:ring-primary">
+        </div>
+
+        <div id="settings-error" class="text-red-500 text-sm hidden"></div>
+
+        <div class="flex gap-3">
+          <button type="button" class="flex-1 px-4 py-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-white rounded-lg transition-colors" onclick="this.closest('.fixed').remove()">
+            Annuler
+          </button>
+          <button type="submit" class="flex-1 px-4 py-2 bg-primary hover:bg-primary/80 text-white font-bold rounded-lg transition-colors">
+            💾 Sauvegarder
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+  document.getElementById('modal-container').appendChild(modal);
+}
+
+async function validerParametresCompte(event) {
+  event.preventDefault();
+  const newEmail = document.getElementById('new-email-input').value.trim();
+  const newPassword = document.getElementById('settings-new-password').value.trim();
+  const confirmPassword = document.getElementById('settings-confirm-password').value.trim();
+  const errorDiv = document.getElementById('settings-error');
+
+  if (newPassword && newPassword !== confirmPassword) {
+    errorDiv.textContent = "Les mots de passe ne correspondent pas.";
+    errorDiv.classList.remove('hidden');
+    return;
+  }
+
+  const updateData = {};
+  let changed = false;
+
+  if (newEmail && newEmail !== utilisateurs[utilisateurConnecte].email) {
+    updateData.email = newEmail;
+    changed = true;
+  }
+
+  if (newPassword) {
+    updateData.motDePasse = newPassword;
+    changed = true;
+  }
+
+  if (!changed) {
+    showToast('Aucune modification à sauvegarder', 'info');
+    document.querySelector('#modal-container .fixed').remove();
+    return;
+  }
+
+  if (db) {
+    try {
+      await db.collection('utilisateurs').doc(utilisateurConnecte).update(updateData);
+      utilisateurs[utilisateurConnecte] = { ...utilisateurs[utilisateurConnecte], ...updateData };
+    } catch (error) {
+      errorDiv.textContent = "Erreur lors de la mise à jour.";
+      errorDiv.classList.remove('hidden');
+      return;
+    }
+  } else {
+    utilisateurs[utilisateurConnecte] = { ...utilisateurs[utilisateurConnecte], ...updateData };
+  }
+
+  sendWebhook(`⚙️ **Paramètres modifiés**\n👤 Utilisateur: ${utilisateurConnecte}${newEmail ? '\n✉️ Nouvel email: ' + newEmail : ''}${newPassword ? '\n🔒 Mot de passe changé' : ''}`);
+
+  showToast('Paramètres mis à jour avec succès !', 'success');
+  document.querySelector('#modal-container .fixed').remove();
+}
+
 // Init
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   // Afficher l'écran de chargement pendant 5 secondes
   setTimeout(() => {
     const loadingScreen = document.getElementById('loading-screen');
@@ -1046,6 +1753,9 @@ document.addEventListener('DOMContentLoaded', function() {
       loadingScreen.remove();
     }, 500);
   }, 5000);
+
+  // Initialiser Firebase et charger les données
+  await initialiserUtilisateurs();
 
   afficherArticles();
   afficherPanier();
