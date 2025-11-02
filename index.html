@@ -150,16 +150,33 @@
         </button>
       </div>
 
-      <div class="text-center">
-        <button onclick="toggleClassicLogin()" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg border border-white/30 transition-all">
-          🔑 Connexion classique
-        </button>
+      <div class="text-center space-y-3">
+        <div class="flex gap-3 justify-center">
+          <button onclick="toggleClassicLogin()" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg border border-white/30 transition-all">
+            🔑 Connexion
+          </button>
+          <button onclick="toggleSignup()" class="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-lg font-bold transition-all">
+            ✨ Créer un compte
+          </button>
+        </div>
 
         <form id="classic-login-form" class="hidden mt-4 max-w-sm mx-auto bg-white/10 backdrop-blur-sm rounded-lg p-6 space-y-4" onsubmit="handleClassicLogin(event)">
+          <h3 class="text-xl font-bold text-white text-center mb-2">🔑 Connexion</h3>
           <input name="identifiant" type="text" placeholder="Identifiant" required class="w-full px-4 py-2 rounded-lg border-none bg-white dark:bg-gray-800 dark:text-white text-base focus:ring-2 focus:ring-primary">
           <input name="motDePasse" type="password" placeholder="Mot de passe" required class="w-full px-4 py-2 rounded-lg border-none bg-white dark:bg-gray-800 dark:text-white text-base focus:ring-2 focus:ring-primary">
           <button type="submit" class="w-full px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-lg transition-colors">Se connecter</button>
           <div id="login-error" class="text-red-400 text-sm"></div>
+        </form>
+
+        <form id="signup-form" class="hidden mt-4 max-w-sm mx-auto bg-white/10 backdrop-blur-sm rounded-lg p-6 space-y-4" onsubmit="handleSignup(event)">
+          <h3 class="text-xl font-bold text-white text-center mb-2">✨ Créer un compte</h3>
+          <input name="identifiant" type="text" placeholder="Identifiant (MAJUSCULES)" required pattern="[A-Z]+" title="Uniquement des lettres majuscules" class="w-full px-4 py-2 rounded-lg border-none bg-white dark:bg-gray-800 dark:text-white text-base focus:ring-2 focus:ring-primary">
+          <input name="email" type="email" placeholder="Email" required class="w-full px-4 py-2 rounded-lg border-none bg-white dark:bg-gray-800 dark:text-white text-base focus:ring-2 focus:ring-primary">
+          <input name="motDePasse" type="password" placeholder="Mot de passe (min. 4 caractères)" required minlength="4" class="w-full px-4 py-2 rounded-lg border-none bg-white dark:bg-gray-800 dark:text-white text-base focus:ring-2 focus:ring-primary">
+          <input name="confirmMotDePasse" type="password" placeholder="Confirmer le mot de passe" required class="w-full px-4 py-2 rounded-lg border-none bg-white dark:bg-gray-800 dark:text-white text-base focus:ring-2 focus:ring-primary">
+          <button type="submit" class="w-full px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold rounded-lg transition-colors">Créer mon compte</button>
+          <div id="signup-error" class="text-red-400 text-sm"></div>
+          <div id="signup-success" class="text-green-400 text-sm"></div>
         </form>
       </div>
     </div>
@@ -470,6 +487,18 @@
   </section>
 
 </main>
+
+<!-- Footer / Filigrane -->
+<footer class="py-6 text-center">
+  <div class="max-w-7xl mx-auto px-4">
+    <p class="text-white/60 text-sm mb-2">
+      💻 Développé par <strong class="text-white/90">har22fra (Harman Singh)</strong>
+    </p>
+    <p class="text-white/50 text-xs">
+      📜 Ce site est sous licence <a href="https://opensource.org/licenses/MIT" target="_blank" class="text-primary hover:text-primary/80 underline">MIT License</a> - © 2025
+    </p>
+  </div>
+</footer>
 
 <!-- Modal Container -->
 <div id="modal-container"></div>
@@ -1343,7 +1372,19 @@ async function validerLivraison() {
 
 // Authentication
 function toggleClassicLogin() {
-  document.getElementById("classic-login-form").classList.toggle("hidden");
+  const loginForm = document.getElementById("classic-login-form");
+  const signupForm = document.getElementById("signup-form");
+
+  loginForm.classList.toggle("hidden");
+  signupForm.classList.add("hidden");
+}
+
+function toggleSignup() {
+  const loginForm = document.getElementById("classic-login-form");
+  const signupForm = document.getElementById("signup-form");
+
+  signupForm.classList.toggle("hidden");
+  loginForm.classList.add("hidden");
 }
 
 function handleClassicLogin(event) {
@@ -1359,13 +1400,85 @@ function handleClassicLogin(event) {
   }
 }
 
+async function handleSignup(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const identifiant = formData.get('identifiant').trim().toUpperCase();
+  const email = formData.get('email').trim();
+  const motDePasse = formData.get('motDePasse').trim();
+  const confirmMotDePasse = formData.get('confirmMotDePasse').trim();
+
+  const errorDiv = document.getElementById("signup-error");
+  const successDiv = document.getElementById("signup-success");
+
+  errorDiv.textContent = "";
+  successDiv.textContent = "";
+
+  // Vérifications
+  if (motDePasse !== confirmMotDePasse) {
+    errorDiv.textContent = "❌ Les mots de passe ne correspondent pas.";
+    return;
+  }
+
+  if (utilisateurs[identifiant]) {
+    errorDiv.textContent = "❌ Cet identifiant existe déjà.";
+    return;
+  }
+
+  if (!/^[A-Z]+$/.test(identifiant)) {
+    errorDiv.textContent = "❌ L'identifiant doit contenir uniquement des lettres majuscules.";
+    return;
+  }
+
+  // Créer le nouveau compte
+  const nouveauCompte = {
+    solde: 10, // Solde de départ
+    motDePasse: motDePasse,
+    email: email,
+    emailVerifie: true,
+    createdAt: new Date()
+  };
+
+  // Sauvegarder dans Firebase
+  if (db) {
+    try {
+      await db.collection('utilisateurs').doc(identifiant).set(nouveauCompte);
+      utilisateurs[identifiant] = nouveauCompte;
+
+      sendWebhook(`🎉 **NOUVEAU COMPTE CRÉÉ**\n👤 Identifiant: ${identifiant}\n📧 Email: ${email}\n💰 Solde initial: 10 cailloux`);
+
+      successDiv.textContent = "✅ Compte créé avec succès ! Connexion en cours...";
+
+      // Connexion automatique après 1 seconde
+      setTimeout(() => {
+        event.target.reset();
+        document.getElementById("signup-form").classList.add("hidden");
+        login(identifiant);
+      }, 1000);
+    } catch (error) {
+      errorDiv.textContent = "❌ Erreur lors de la création du compte. Réessayez.";
+      console.error("Erreur création compte:", error);
+    }
+  } else {
+    // Mode hors ligne
+    utilisateurs[identifiant] = nouveauCompte;
+    successDiv.textContent = "✅ Compte créé avec succès ! Connexion en cours...";
+
+    setTimeout(() => {
+      event.target.reset();
+      document.getElementById("signup-form").classList.add("hidden");
+      login(identifiant);
+    }, 1000);
+  }
+}
+
 async function login(username) {
   utilisateurConnecte = username;
 
   // Charger les données depuis Firebase
   await chargerUtilisateurs();
 
-  // Vérifier si l'email est manquant
+  // Vérifier si l'email est manquant (seulement pour les anciens comptes)
   if (!utilisateurs[username].email) {
     demanderEmail(username);
     return;
@@ -1374,7 +1487,7 @@ async function login(username) {
   document.getElementById("login-section").classList.add("hidden");
   document.getElementById("user-dashboard").classList.remove("hidden");
 
-  // Afficher le menu admin si c'est HARMAN
+  // Afficher le menu admin si c'est HARMAN ou ADMIN
   if (username === 'HARMAN' || username === 'ADMIN') {
     document.getElementById('admin-menu-btn').classList.remove('hidden');
   }
