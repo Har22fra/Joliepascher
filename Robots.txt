@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://har22fra.github.io/Joliepascher/sitemap.xml
