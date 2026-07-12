@@ -1,0 +1,17 @@
+{
+  "name": "Jolie Pas Cher",
+  "short_name": "JoliePasCher",
+  "description": "Boutique en ligne fictive avec IA, messagerie et monnaie virtuelle.",
+  "start_url": "/Joliepascher/",
+  "scope": "/Joliepascher/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "255x256",
+      "type": "image/png"
+    }
+  ]
+}
