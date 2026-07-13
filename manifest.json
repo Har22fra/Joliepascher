@@ -11,7 +11,7 @@
     {
       "src": "image.ico",
       "sizes": "255x256",
-      "type": "image/png"
+      "type": "image/x-icon"
     }
   ]
 }
